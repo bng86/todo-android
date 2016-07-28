@@ -50,66 +50,76 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
 
         final Task task = getItem(position);
         holder.checkBox.setChecked(task.isFinished());
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            task.setIsFinished(isChecked);
-            if (isChecked) {
-                listener.setTaskFinished(position);
-            }
-            }
-        });
         if (task.getTask() != null && task.getTask().length() != 0) {
-            holder.task.setText(task.getTask());
+            holder.txtTask.setText(task.getTask());
             holder.editTask.setVisibility(View.GONE);
-            holder.task.setVisibility(View.VISIBLE);
+            holder.txtTask.setVisibility(View.VISIBLE);
         } else {
             holder.editTask.setText("");
             holder.editTask.setVisibility(View.VISIBLE);
-            holder.task.setVisibility(View.GONE);
+            holder.txtTask.setVisibility(View.GONE);
         }
-        holder.editTask.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-            if (!hasFocus) {
-                if (v != null && v.getParent() != null && !TextUtils.isEmpty(((EditText)v).getText())) {
-                    ((EditText) v).setOnEditorActionListener(null);
-                    String taskk = ((EditText) v).getText().toString();
-                    task.setTask(taskk);
-                    holder.task.setText(taskk);
-                    v.setVisibility(View.GONE);
-                    holder.task.setVisibility(View.VISIBLE);
-                    listener.setEditTaskFinished(position, task);
-                }
-            }
-            }
-        });
-        holder.editTask.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                String taskk = ((EditText) v).getText().toString();
-                task.setTask(taskk);
-                holder.task.setText(taskk);
-                v.setVisibility(View.GONE);
-                holder.task.setVisibility(View.VISIBLE);
-                listener.setEditTaskFinished(position, task);
-            }
-            return false;
-            }
-        });
+
+        holder.bindEvent(position, task);
+
         return convertView;
     }
 
+
     public class ToDoItemViewHolder {
-        public TextView task;
+        public TextView txtTask;
         public EditText editTask;
         public CheckBox checkBox;
 
         public ToDoItemViewHolder(View view) {
-            task = (TextView) view.findViewById(R.id.partial_to_do_task);
+            txtTask = (TextView) view.findViewById(R.id.partial_to_do_task);
             checkBox = (CheckBox) view.findViewById(R.id.partial_to_do_checkbox);
             editTask = (EditText) view.findViewById(R.id.partial_to_do_edit_task);
         }
+
+        public void bindEvent(final int position, final Task task) {
+            editTask.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        if (v != null && v.getParent() != null && !TextUtils.isEmpty(((EditText)v).getText())) {
+                            ((EditText) v).setOnEditorActionListener(null);
+                            String taskk = ((EditText) v).getText().toString();
+                            task.setTask(taskk);
+                            txtTask.setText(taskk);
+                            v.setVisibility(View.GONE);
+                            txtTask.setVisibility(View.VISIBLE);
+                            listener.setEditTaskFinished(position, task);
+                        }
+                    }
+                }
+            });
+
+            editTask.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        String taskk = ((EditText) v).getText().toString();
+                        task.setTask(taskk);
+                        txtTask.setText(taskk);
+                        v.setVisibility(View.GONE);
+                        txtTask.setVisibility(View.VISIBLE);
+                        listener.setEditTaskFinished(position, task);
+                    }
+                    return false;
+                }
+            });
+            
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    task.setIsFinished(isChecked);
+                    if (isChecked) {
+                        listener.setTaskFinished(position);
+                    }
+                }
+            });
+        }
+
     }
 }
