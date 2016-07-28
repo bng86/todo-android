@@ -98,6 +98,7 @@ implements ToDoItemAdapter.ToDoListListener {
     @Override
     public void onResume() {
         super.onResume();
+        isEditing = false;
         tasks = getDatabaseHelper().getAllUnfinishedtasks();
         adapter.clear();
         adapter.addAll(tasks);
