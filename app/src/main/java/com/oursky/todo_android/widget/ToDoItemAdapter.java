@@ -20,13 +20,11 @@ import com.oursky.todo_android.content.model.Task;
  * Created by yuyauchun on 13/3/15.
  */
 public class ToDoItemAdapter extends ArrayAdapter<Task> {
-    private Context context;
     private LayoutInflater inflater;
     private ToDoListListener listener;
 
     public ToDoItemAdapter(Context context) {
         super(context, 0);
-        this.context = context;
         this.inflater = LayoutInflater.from(context);
         try {
             listener = (ToDoListListener) context;
@@ -109,7 +107,7 @@ public class ToDoItemAdapter extends ArrayAdapter<Task> {
                     return false;
                 }
             });
-            
+
             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
