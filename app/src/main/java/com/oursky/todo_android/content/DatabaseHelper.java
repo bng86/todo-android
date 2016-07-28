@@ -65,7 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Task task = new Task();
                 task.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                task.setTask(c.getString(c.getColumnIndex(KEY_TASK)));
+                task.setName(c.getString(c.getColumnIndex(KEY_TASK)));
                 task.setDueAt(c.getString(c.getColumnIndex(KEY_DUE_AT)));
                 int isFinished = c.getInt(c.getColumnIndex(KEY_FINISHED));
                 task.setIsFinished(isFinished == 0 ? false : true);
@@ -90,7 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Task task = new Task();
                 task.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                task.setTask(c.getString(c.getColumnIndex(KEY_TASK)));
+                task.setName(c.getString(c.getColumnIndex(KEY_TASK)));
                 task.setDueAt(c.getString(c.getColumnIndex(KEY_DUE_AT)));
                 task.setIsFinished(false);
 
@@ -114,7 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Task task = new Task();
                 task.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                task.setTask(c.getString(c.getColumnIndex(KEY_TASK)));
+                task.setName(c.getString(c.getColumnIndex(KEY_TASK)));
                 task.setDueAt(c.getString(c.getColumnIndex(KEY_DUE_AT)));
                 task.setIsFinished(true);
 
@@ -130,7 +130,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_TASK, task.getTask());
+        values.put(KEY_TASK, task.getName());
         values.put(KEY_DUE_AT, task.getDueAt());
         values.put(KEY_FINISHED, task.isFinished() ? 1 : 0);
 
@@ -150,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_TASK, task.getTask());
+        values.put(KEY_TASK, task.getName());
         values.put(KEY_DUE_AT, task.getDueAt());
         values.put(KEY_FINISHED, task.isFinished() ? 1 : 0);
 

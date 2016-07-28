@@ -4,8 +4,6 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -16,17 +14,11 @@ import com.oursky.todo_android.content.model.Task;
 import com.oursky.todo_android.widget.ToDoItemAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
-public class ToDoListActivity extends ListActivity
-implements ToDoItemAdapter.ToDoListListener {
+public class ToDoListActivity extends ListActivity implements ToDoItemAdapter.ToDoListListener {
     private ToDoItemAdapter adapter;
-    private Button addButton, finishButton;
     private Context context;
-    private boolean isEditing = false;
-
-    private List<Task> tasks = new ArrayList<Task>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,35 +26,45 @@ implements ToDoItemAdapter.ToDoListListener {
         setContentView(R.layout.activity_to_do_list);
         context = this;
 
-        addButton = (Button) findViewById(R.id.partial_to_do_footer_add);
-        finishButton = (Button) findViewById(R.id.partial_to_do_footer_finish);
+        Button addButton = (Button) findViewById(R.id.partial_to_do_footer_add);
+        Button finishButton = (Button) findViewById(R.id.partial_to_do_footer_finish);
 
         adapter = new ToDoItemAdapter(this);
 
         finishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            Intent intent = new Intent(context, FinishedListActivity.class);
-            startActivity(intent);
+                Intent intent = new Intent(context, FinishedListActivity.class);
+                startActivity(intent);
             }
         });
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if (!isEditing) {
-                isEditing = true;
-                tasks.add(new Task());
-                adapter.clear();
-                adapter.addAll(tasks);
-                getListView().setSelection(getListView().getCount() - 1);
-            }
+                adapter.addTask();
             }
         });
+
         setListAdapter(adapter);
+        ArrayList<Task> tasks = (ArrayList<Task>) getDatabaseHelper().getAllUnfinishedtasks();
+        adapter.setTasks(tasks);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("tasks", adapter.getTasks());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        ArrayList<Task> tasks = state.getParcelableArrayList("task");
+        adapter.setTasks(tasks);
+        super.onRestoreInstanceState(state);
     }
 
     private void hideKeyboard() {
-        // Check if no view has focus:
         View view = this.getCurrentFocus();
         if (view != null) {
             view.clearFocus();
@@ -74,49 +76,25 @@ implements ToDoItemAdapter.ToDoListListener {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        isEditing = false;
-        tasks = getDatabaseHelper().getAllUnfinishedtasks();
-        adapter.clear();
-        adapter.addAll(tasks);
+        adapter.onResume();
     }
 
     @Override
-    public void setTaskFinished(int position) {
-        getDatabaseHelper().updateTask(tasks.remove(position));
-        adapter.clear();
-        adapter.addAll(tasks);
+    public void setTaskFinished(Task task) {
+        getDatabaseHelper().updateTask(task);
     }
 
     @Override
     public void setEditTaskFinished(int position, Task task) {
         task.setId((int) getDatabaseHelper().createTask(task));
-        tasks.set(position, task);
-        isEditing = false;
         hideKeyboard();
+    }
+
+    @Override
+    public void onAddedTask() {
+        getListView().setSelection(getListView().getCount() - 1);
     }
 
     private DatabaseHelper getDatabaseHelper() {

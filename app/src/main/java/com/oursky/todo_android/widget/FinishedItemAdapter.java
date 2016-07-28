@@ -43,7 +43,7 @@ public class FinishedItemAdapter extends ArrayAdapter<Task> {
         }
 
         public void setTask(Task t) {
-            task.setText(t.getTask());
+            task.setText(t.getName());
         }
     }
 }
