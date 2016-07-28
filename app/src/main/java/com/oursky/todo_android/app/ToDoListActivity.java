@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -65,12 +64,12 @@ implements ToDoItemAdapter.ToDoListListener {
     private void hideKeyboard() {
         // Check if no view has focus:
         View view = this.getCurrentFocus();
-        view.clearFocus();
         if (view != null) {
+            view.clearFocus();
             InputMethodManager inputManager =
-                (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(
-                view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 
@@ -116,6 +115,7 @@ implements ToDoItemAdapter.ToDoListListener {
         task.setId((int) getDatabaseHelper().createTask(task));
         tasks.set(position, task);
         isEditing = false;
+        hideKeyboard();
     }
 
     private DatabaseHelper getDatabaseHelper() {
